@@ -18,6 +18,7 @@ function AdminNavbar() {
   const links = [
     { to: "/admin", label: "Dashboard" },
     { to: "/admin/users", label: "Users" },
+    { to: "/admin/faculty", label: "Faculty" },
     { to: "/admin/feedbacks", label: "Feedbacks" },
     { to: "/admin/contacts", label: "Messages" },
     { to: "/admin/academicmanagement", label: "Academics" },
