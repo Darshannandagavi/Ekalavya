@@ -1,4 +1,4 @@
-import cloudinary from "../config/cloudinaryconfig.js";
+import cloudinary from "../config/cloudinaryConfig.js";
 import { Readable } from "stream";
 
 /**
