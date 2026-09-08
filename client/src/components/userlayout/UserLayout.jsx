@@ -14,11 +14,11 @@ function UserLayout() {
       try {
         const res = await API.get("/auth/me");
         console.log(res)
-        if (res.data.role !== "student") { navigate("/"); return; }
+        // if (res.data.role !== "student") { navigate("/"); return; }
         setAuthorized(true);
       } catch {
-        setAuthorized(false);
-        navigate("/login");
+        // setAuthorized(false);
+        // navigate("/login");
       }
     };
     check();
