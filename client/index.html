@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>client</title>
+
+  <style>
+    html::-webkit-scrollbar,
+    body::-webkit-scrollbar {
+      display: none;
+    }
+
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+
+      -webkit-touch-callout: none;
+      -webkit-tap-highlight-color: transparent;
+
+      -webkit-user-drag: none;
+    }
+
+    img,
+    svg,
+    video,
+    canvas {
+      pointer-events: none;
+      -webkit-user-drag: none;
+      user-drag: none;
+    }
+
+    * {
+      -webkit-user-select: none;
+      user-select: none;
+      -webkit-touch-callout: none;
+      box-sizing: border-box;
+    }
+
+    @media print {
+      html,
+      body {
+        display: none !important;
+      }
+    }
+
+    .devtools-detected {
+      overflow: hidden !important;
+    }
+
+    .devtools-detected #root {
+      display: none !important;
+    }
+  </style>
+</head>
+
+<body>
+
+<div id="root"></div>
+
+<script>
+
+/////////////////////////////
+// Disable Right Click
+/////////////////////////////
+
+document.addEventListener("contextmenu", e => e.preventDefault());
+
+/////////////////////////////
+// Disable Copy/Paste/Cut
+/////////////////////////////
+
+["copy","cut","paste"].forEach(event=>{
+    document.addEventListener(event,e=>e.preventDefault());
+});
+
+/////////////////////////////
+// Disable Drag
+/////////////////////////////
+
+document.addEventListener("dragstart",e=>e.preventDefault());
+
+/////////////////////////////
+// Disable Select
+/////////////////////////////
+
+document.addEventListener("selectstart",e=>e.preventDefault());
+
+/////////////////////////////
+// Disable Text Selection
+/////////////////////////////
+
+document.onselectstart=()=>false;
+
+/////////////////////////////
+// Disable Keyboard Shortcuts
+/////////////////////////////
+
+document.addEventListener("keydown",function(e){
+
+    const key=e.key.toUpperCase();
+
+    if(
+        e.key==="F12" ||
+
+        (e.ctrlKey && key==="S") ||
+
+        (e.ctrlKey && key==="P") ||
+
+        (e.ctrlKey && key==="U") ||
+
+        (e.ctrlKey && key==="C") ||
+
+        (e.ctrlKey && key==="V") ||
+
+        (e.ctrlKey && key==="X") ||
+
+        (e.ctrlKey && key==="A") ||
+
+        (e.ctrlKey && key==="H") ||
+
+        (e.ctrlKey && key==="J") ||
+
+        (e.ctrlKey && key==="I") ||
+
+        (e.ctrlKey && e.shiftKey && key==="I") ||
+
+        (e.ctrlKey && e.shiftKey && key==="J") ||
+
+        (e.ctrlKey && e.shiftKey && key==="C") ||
+
+        (e.ctrlKey && e.shiftKey && key==="K")
+
+    ){
+        e.preventDefault();
+        e.stopPropagation();
+        return false;
+    }
+
+});
+
+/////////////////////////////
+// Disable View Source
+/////////////////////////////
+
+window.onhelp=function(){
+    return false;
+};
+
+/////////////////////////////
+// Blur on Window Lose Focus
+/////////////////////////////
+
+window.addEventListener("blur",()=>{
+    document.body.style.filter="blur(20px)";
+});
+
+window.addEventListener("focus",()=>{
+    document.body.style.filter="none";
+});
+
+/////////////////////////////
+// DevTools Detection
+/////////////////////////////
+
+(function(){
+
+    const threshold=160;
+
+    function detect(){
+
+        if(
+            window.outerWidth-window.innerWidth>threshold ||
+            window.outerHeight-window.innerHeight>threshold
+        ){
+
+            document.body.classList.add("devtools-detected");
+
+            document.body.innerHTML=`
+            <div style="
+            background:#000;
+            color:#fff;
+            width:100vw;
+            height:100vh;
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            font-size:28px;
+            font-family:sans-serif;">
+            Developer Tools Detected
+            </div>`;
+        }
+
+    }
+
+    setInterval(detect,1000);
+
+})();
+
+/////////////////////////////
+// Detect Console Open
+/////////////////////////////
+
+(function(){
+
+    const element=new Image();
+
+    Object.defineProperty(element,'id',{
+
+        get:function(){
+
+            document.body.innerHTML="<h1 style='color:white;background:black;height:100vh;display:flex;justify-content:center;align-items:center;'>Developer Tools Detected</h1>";
+
+        }
+
+    });
+
+    setInterval(function(){
+
+        console.dir(element);
+
+    },1000);
+
+})();
+
+/////////////////////////////
+// Disable Image Drag
+/////////////////////////////
+
+document.querySelectorAll("img").forEach(img=>{
+    img.draggable=false;
+});
+
+/////////////////////////////
+// Disable Double Click Selection
+/////////////////////////////
+
+document.addEventListener("dblclick",e=>{
+    e.preventDefault();
+});
+
+/////////////////////////////
+// Disable Middle Mouse
+/////////////////////////////
+
+document.addEventListener("mousedown",e=>{
+    if(e.button===1)
+        e.preventDefault();
+});
+
+</script>
+
+<script type="module" src="/src/main.jsx"></script>
+
+</body>
+</html>

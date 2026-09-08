@@ -1,0 +1,35 @@
+:root {
+
+  --primary:       #f5ad42;
+  --primary-hover: #db9c3e;
+  --primary-light: #ecfdf5;
+  --primary-text:  #f5ad42;
+
+  --bg-main:      #FFF8E1;
+  --bg-secondary: #f9fafb;
+  --bg-card:      #ffffff;
+  --bg-input:     #f9fafb;
+  --bg-nav:       rgba(255,255,255,0.92);
+  --text-main:    #111827;
+  --text-muted:   #6b7280;
+  --text-faint:   #9ca3af;
+  --border:       #e5e7eb;
+  --border-hover: #d1d5db;
+  --shadow:       0 8px 32px rgba(0,0,0,0.08);
+}
+[data-theme="dark"] {
+
+  --bg-main:      #0f0f0f;
+  --bg-secondary: #111111;
+  --bg-card:      #1a1a1a;
+  --bg-input:     #111111;
+  --bg-nav:       rgba(15,15,15,0.92);
+  --text-main:    #ffffff;
+  --text-muted:   #9ca3af;
+  --text-faint:   #6b7280;
+  --border:       rgba(255,255,255,0.1);
+  --border-hover: rgba(255,255,255,0.2);
+  --shadow:       0 8px 32px rgba(0,0,0,0.4);
+}
+p,h1,span,li,button,input,textarea { font-family: 'Georgia', sans-serif; }
+@keyframes spin { to { transform: rotate(360deg); } }
