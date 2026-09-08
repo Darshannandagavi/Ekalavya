@@ -13,7 +13,7 @@ function AdminLayout() {
     const check = async () => {
       try {
         const res = await API.get("/auth/me");
-        // if (res.data.role !== "admin") { navigate("/"); return; }
+        if (res.data.role !== "admin") { navigate("/"); return; }
         console.log(res)
         setAuthorized(true);
       } catch {

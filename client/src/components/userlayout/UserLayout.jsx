@@ -13,6 +13,7 @@ function UserLayout() {
     const check = async () => {
       try {
         const res = await API.get("/auth/me");
+        console.log(res)
         if (res.data.role !== "student") { navigate("/"); return; }
         setAuthorized(true);
       } catch {
