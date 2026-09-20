@@ -12,9 +12,9 @@ const contactMethods = [
   {
     type: "phone",
     label: "Phone",
-    value: "+91 63624 60082",
+    value: "+91 8549076433",
     hint: "Talk directly with our team",
-    href: "tel:+916362460082",
+    href: "tel:+918549076433",
   },
   {
     type: "location",
