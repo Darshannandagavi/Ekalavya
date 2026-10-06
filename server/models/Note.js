@@ -37,16 +37,16 @@ const noteSchema = new mongoose.Schema(
 
     uploadedBy: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+      ref: "Faculty",
       required: true,
     },
 
     order: {
       type: Number,
       default: 1,
-    }
+    },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 export default mongoose.model("Note", noteSchema);

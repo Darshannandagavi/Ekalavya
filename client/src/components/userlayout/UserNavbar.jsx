@@ -60,6 +60,7 @@ function UserNavbar() {
     { to: "/dashboard", label: "Dashboard" },
     { to: "/feedback", label: "Feedback" },
     { to: "/studentnotes", label: "Notes" },
+    { to: "/doubts", label: "Doubts" },
   ];
 
   const isActive = (path) => location.pathname === path;

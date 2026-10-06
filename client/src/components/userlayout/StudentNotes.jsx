@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import API from "../../axiosConfig";
-
+import PeekRating from "./PeekRating";
 export default function StudentNotes() {
   // ============================================================
   // ACADEMIC DATA
@@ -15,7 +15,16 @@ export default function StudentNotes() {
 
   const [academicLoading, setAcademicLoading] = useState(true);
   const [courseLoading, setCourseLoading] = useState(false);
+  const [facultyRating, setFacultyRating] = useState({
+    average: 0,
+    count: 0,
+    myRating: 0,
+  });
 
+  const [ratingLoading, setRatingLoading] = useState(false);
+  const [ratingSubmitting, setRatingSubmitting] = useState(false);
+  const [ratingError, setRatingError] = useState("");
+  const [ratingSuccess, setRatingSuccess] = useState("");
   // ============================================================
   // NOTES
   // ============================================================
@@ -23,6 +32,17 @@ export default function StudentNotes() {
   const [notes, setNotes] = useState([]);
   const [loading, setLoading] = useState(false);
   const [activeNote, setActiveNote] = useState(null);
+
+  // ============================================================
+  // DOUBTS
+  // ============================================================
+
+  const [doubts, setDoubts] = useState([]);
+  const [doubtsLoading, setDoubtsLoading] = useState(false);
+  const [doubtSubmitting, setDoubtSubmitting] = useState(false);
+  const [doubtQuestion, setDoubtQuestion] = useState("");
+  const [doubtError, setDoubtError] = useState("");
+  const [doubtSuccess, setDoubtSuccess] = useState("");
 
   const [search, setSearch] = useState("");
   const [activeSubject, setActiveSubject] = useState("all");
@@ -96,6 +116,17 @@ export default function StudentNotes() {
     setActiveNote(null);
     setActiveSubject("all");
     setSearch("");
+    setDoubts([]);
+    setDoubtQuestion("");
+    setDoubtError("");
+    setDoubtSuccess("");
+    setFacultyRating({
+      average: 0,
+      count: 0,
+      myRating: 0,
+    });
+    setRatingError("");
+    setRatingSuccess("");
 
     if (!universityId) {
       return;
@@ -128,6 +159,17 @@ export default function StudentNotes() {
     setActiveNote(null);
     setActiveSubject("all");
     setSearch("");
+    setDoubts([]);
+    setDoubtQuestion("");
+    setDoubtError("");
+    setDoubtSuccess("");
+    setFacultyRating({
+      average: 0,
+      count: 0,
+      myRating: 0,
+    });
+    setRatingError("");
+    setRatingSuccess("");
   };
 
   // ============================================================
@@ -235,6 +277,175 @@ export default function StudentNotes() {
   // ============================================================
 
   const currentNote = notes.find((note) => note._id === activeNote);
+
+  // ============================================================
+  // FACULTY RATING
+  // ============================================================
+
+  useEffect(() => {
+    const facultyId = currentNote?.uploadedBy?._id || currentNote?.uploadedBy;
+
+    if (!facultyId || !currentNote?._id) {
+      setFacultyRating({
+        average: 0,
+        count: 0,
+        myRating: 0,
+      });
+
+      setRatingError("");
+      setRatingSuccess("");
+
+      return;
+    }
+
+    const fetchFacultyRating = async () => {
+      try {
+        setRatingLoading(true);
+        setRatingError("");
+        setRatingSuccess("");
+
+        const res = await API.get(`/faculty-reviews/faculty/${facultyId}`, {
+          params: {
+            noteId: currentNote._id,
+          },
+        });
+
+        setFacultyRating({
+          average: Number(res.data?.faculty?.avg_rating || 0),
+          count: Number(res.data?.faculty?.rating_count || 0),
+          myRating: Number(res.data?.myRating || 0),
+        });
+      } catch (error) {
+        console.error("Failed to fetch faculty rating:", error);
+
+        setFacultyRating({
+          average: 0,
+          count: 0,
+          myRating: 0,
+        });
+
+        setRatingError(
+          error.response?.data?.message || "Failed to load faculty rating.",
+        );
+      } finally {
+        setRatingLoading(false);
+      }
+    };
+
+    fetchFacultyRating();
+  }, [currentNote?._id, currentNote?.uploadedBy?._id]);
+
+  const handleFacultyRating = async (value) => {
+    const facultyId = currentNote?.uploadedBy?._id || currentNote?.uploadedBy;
+
+    if (!facultyId || !currentNote?._id || !value || ratingSubmitting) {
+      return;
+    }
+
+    try {
+      setRatingSubmitting(true);
+      setRatingError("");
+      setRatingSuccess("");
+
+      const res = await API.post(`/faculty-reviews/faculty/${facultyId}`, {
+        noteId: currentNote._id,
+        rating: value,
+      });
+
+      setFacultyRating({
+        average: Number(res.data?.average || 0),
+        count: Number(res.data?.count || 0),
+        myRating: Number(res.data?.myRating || value),
+      });
+
+      setRatingSuccess("Your rating has been saved.");
+
+      setTimeout(() => {
+        setRatingSuccess("");
+      }, 2500);
+    } catch (error) {
+      console.error("Failed to submit faculty rating:", error);
+
+      setRatingError(
+        error.response?.data?.message || "Failed to save your rating.",
+      );
+    } finally {
+      setRatingSubmitting(false);
+    }
+  };
+
+  // ============================================================
+  // DOUBT SESSION
+  // ============================================================
+
+  useEffect(() => {
+    if (!currentNote?._id) {
+      setDoubts([]);
+      setDoubtsLoading(false);
+      return;
+    }
+
+    const fetchDoubts = async () => {
+      try {
+        setDoubtsLoading(true);
+        setDoubtError("");
+
+        const res = await API.get(`/doubts/note/${currentNote._id}`);
+
+        setDoubts(res.data || []);
+      } catch (error) {
+        console.error("Failed to fetch doubts:", error);
+        setDoubts([]);
+        setDoubtError(
+          error.response?.data?.message || "Failed to load doubts.",
+        );
+      } finally {
+        setDoubtsLoading(false);
+      }
+    };
+
+    fetchDoubts();
+  }, [currentNote?._id]);
+
+  const submitDoubt = async (e) => {
+    e.preventDefault();
+
+    const question = doubtQuestion.trim();
+
+    if (!currentNote?._id || !question) {
+      return;
+    }
+
+    try {
+      setDoubtSubmitting(true);
+      setDoubtError("");
+      setDoubtSuccess("");
+
+      const res = await API.post("/doubts", {
+        noteId: currentNote._id,
+        question,
+      });
+
+      if (res.data?.doubt) {
+        setDoubts((prev) => [res.data.doubt, ...prev]);
+      }
+
+      setDoubtQuestion("");
+      setDoubtSuccess("Your doubt has been submitted.");
+
+      setTimeout(() => {
+        setDoubtSuccess("");
+      }, 3000);
+    } catch (error) {
+      console.error("Failed to submit doubt:", error);
+
+      setDoubtError(
+        error.response?.data?.message || "Failed to submit your doubt.",
+      );
+    } finally {
+      setDoubtSubmitting(false);
+    }
+  };
 
   // ============================================================
   // SORTED NOTES
@@ -1084,6 +1295,417 @@ export default function StudentNotes() {
         }
 
         /* ======================================================
+           FACULTY RATING
+        ====================================================== */
+
+        .faculty-details-card {
+          width: 100%;
+        }
+
+        .faculty-average-rating {
+          margin-left: auto;
+        }
+
+        @media (max-width: 600px) {
+          .faculty-details-card {
+            align-items: flex-start !important;
+            flex-wrap: wrap;
+          }
+
+          .faculty-average-rating {
+            width: 100%;
+            margin-left: 0 !important;
+            padding-left: 0 !important;
+            padding-top: 10px;
+            border-left: 0 !important;
+            border-top: 1px solid var(--border);
+          }
+        }
+
+        .faculty-rating-session {
+          margin-top: 55px;
+          margin-bottom: 30px;
+          padding: 22px;
+          border: 1px solid var(--border);
+          border-radius: 15px;
+          background: var(--bg-card);
+          box-shadow: var(--shadow);
+        }
+
+        .faculty-rating-header {
+          display: flex;
+          align-items: flex-start;
+          justify-content: space-between;
+          gap: 20px;
+        }
+
+        .faculty-rating-eyebrow {
+          margin: 0 0 6px;
+          color: var(--primary-text);
+          font-size: 10px;
+          font-weight: 800;
+          letter-spacing: 0.08em;
+          text-transform: uppercase;
+        }
+
+        .faculty-rating-title {
+          margin: 0;
+          color: var(--text-main);
+          font-size: 20px;
+          font-weight: 800;
+        }
+
+        .faculty-rating-subtitle {
+          margin: 6px 0 0;
+          color: var(--text-muted);
+          font-size: 12px;
+          line-height: 1.55;
+        }
+
+        .faculty-rating-average {
+          display: flex;
+          align-items: center;
+          gap: 5px;
+          flex-shrink: 0;
+          padding: 8px 11px;
+          border: 1px solid var(--border);
+          border-radius: 10px;
+          background: var(--bg-secondary);
+          color: var(--text-muted);
+          font-size: 11px;
+        }
+
+        .faculty-rating-average-star {
+          color: #f5b400;
+          font-size: 16px;
+        }
+
+        .faculty-rating-average strong {
+          color: var(--text-main);
+          font-size: 14px;
+        }
+
+        .faculty-rating-control {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          min-height: 82px;
+          margin-top: 14px;
+        }
+
+        .faculty-rating-current {
+          margin: 3px 0 0;
+          text-align: center;
+          color: var(--text-muted);
+          font-size: 11px;
+        }
+
+        .faculty-rating-message {
+          margin: 8px 0 0;
+          text-align: center;
+          color: var(--text-muted);
+          font-size: 11px;
+        }
+
+        .faculty-rating-message.success {
+          color: var(--primary-text);
+        }
+
+        .faculty-rating-message.error {
+          color: #dc2626;
+        }
+
+        /* ======================================================
+           DOUBT SESSION
+        ====================================================== */
+
+        .doubt-session {
+          margin-top: 55px;
+          padding-top: 32px;
+          border-top: 1px solid var(--border);
+        }
+
+        .doubt-session-header {
+          display: flex;
+          align-items: flex-start;
+          justify-content: space-between;
+          gap: 20px;
+          margin-bottom: 22px;
+        }
+
+        .doubt-session-eyebrow {
+          margin: 0 0 5px;
+          color: var(--primary);
+          font-size: 10px;
+          font-weight: 800;
+          letter-spacing: 0.1em;
+          text-transform: uppercase;
+        }
+
+        .doubt-session-title {
+          margin: 0;
+          color: var(--text-main);
+          font-size: 24px;
+          line-height: 1.25;
+          font-weight: 850;
+        }
+
+        .doubt-session-subtitle {
+          margin: 6px 0 0;
+          color: var(--text-muted);
+          font-size: 12px;
+          line-height: 1.6;
+        }
+
+        .doubt-count {
+          flex-shrink: 0;
+          padding: 6px 10px;
+          border: 1px solid var(--border);
+          border-radius: 999px;
+          background: var(--bg-card);
+          color: var(--text-muted);
+          font-size: 10px;
+          font-weight: 750;
+        }
+
+        .doubt-form {
+          padding: 17px;
+          margin-bottom: 20px;
+          border: 1px solid var(--border);
+          border-radius: 14px;
+          background: var(--bg-card);
+        }
+
+        .doubt-form-label {
+          display: block;
+          margin-bottom: 8px;
+          color: var(--text-main);
+          font-size: 12px;
+          font-weight: 750;
+        }
+
+        .doubt-textarea {
+          width: 100%;
+          min-height: 105px;
+          padding: 12px 13px;
+          border: 1px solid var(--border);
+          border-radius: 10px;
+          outline: none;
+          resize: vertical;
+          background: var(--bg-main);
+          color: var(--text-main);
+          font-family: inherit;
+          font-size: 13px;
+          line-height: 1.6;
+          transition:
+            border-color 0.18s ease,
+            box-shadow 0.18s ease;
+        }
+
+        .doubt-textarea::placeholder {
+          color: var(--text-faint);
+        }
+
+        .doubt-textarea:focus {
+          border-color: var(--primary);
+          box-shadow: 0 0 0 3px color-mix(
+            in srgb,
+            var(--primary) 10%,
+            transparent
+          );
+        }
+
+        .doubt-form-footer {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 12px;
+          margin-top: 10px;
+        }
+
+        .doubt-character-count {
+          color: var(--text-faint);
+          font-size: 10px;
+        }
+
+        .doubt-submit-button {
+          min-width: 125px;
+          height: 38px;
+          padding: 0 15px;
+          border: 0;
+          border-radius: 9px;
+          background: var(--primary);
+          color: #fff;
+          font-size: 12px;
+          font-weight: 750;
+          cursor: pointer;
+          transition:
+            opacity 0.15s ease,
+            transform 0.15s ease;
+        }
+
+        .doubt-submit-button:hover:not(:disabled) {
+          transform: translateY(-1px);
+        }
+
+        .doubt-submit-button:disabled {
+          opacity: 0.55;
+          cursor: not-allowed;
+        }
+
+        .doubt-message {
+          margin: 10px 0 0;
+          font-size: 11px;
+          line-height: 1.5;
+        }
+
+        .doubt-message.error {
+          color: #dc2626;
+        }
+
+        .doubt-message.success {
+          color: #16a34a;
+        }
+
+        .doubts-list {
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
+        }
+
+        .doubt-card {
+          padding: 16px;
+          border: 1px solid var(--border);
+          border-radius: 13px;
+          background: var(--bg-card);
+        }
+
+        .doubt-card-top {
+          display: flex;
+          align-items: flex-start;
+          gap: 11px;
+        }
+
+        .doubt-avatar {
+          width: 32px;
+          min-width: 32px;
+          height: 32px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border-radius: 50%;
+          background: color-mix(
+            in srgb,
+            var(--primary) 12%,
+            var(--bg-main)
+          );
+          color: var(--primary);
+          font-size: 11px;
+          font-weight: 800;
+        }
+
+        .doubt-card-content {
+          min-width: 0;
+          flex: 1;
+        }
+
+        .doubt-card-meta {
+          display: flex;
+          align-items: center;
+          gap: 7px;
+          flex-wrap: wrap;
+          margin-bottom: 6px;
+        }
+
+        .doubt-author {
+          color: var(--text-main);
+          font-size: 11px;
+          font-weight: 750;
+        }
+
+        .doubt-date {
+          color: var(--text-faint);
+          font-size: 10px;
+        }
+
+        .doubt-status {
+          margin-left: auto;
+          padding: 4px 8px;
+          border-radius: 999px;
+          font-size: 9px;
+          font-weight: 800;
+          text-transform: uppercase;
+          letter-spacing: 0.04em;
+        }
+
+        .doubt-status.pending {
+          background: color-mix(in srgb, #f59e0b 12%, var(--bg-main));
+          color: #d97706;
+        }
+
+        .doubt-status.answered {
+          background: color-mix(in srgb, #16a34a 12%, var(--bg-main));
+          color: #16a34a;
+        }
+
+        .doubt-question {
+          margin: 0;
+          color: var(--text-main);
+          font-size: 13px;
+          line-height: 1.7;
+          white-space: pre-wrap;
+          overflow-wrap: anywhere;
+        }
+
+        .doubt-answer {
+          margin-top: 14px;
+          padding: 13px 14px;
+          border-left: 3px solid var(--primary);
+          border-radius: 0 9px 9px 0;
+          background: color-mix(
+            in srgb,
+            var(--primary) 6%,
+            var(--bg-main)
+          );
+        }
+
+        .doubt-answer-label {
+          margin: 0 0 5px;
+          color: var(--primary);
+          font-size: 9px;
+          font-weight: 850;
+          letter-spacing: 0.08em;
+          text-transform: uppercase;
+        }
+
+        .doubt-answer-text {
+          margin: 0;
+          color: var(--text-main);
+          font-size: 12px;
+          line-height: 1.7;
+          white-space: pre-wrap;
+          overflow-wrap: anywhere;
+        }
+
+        .doubt-loading,
+        .doubt-empty {
+          padding: 30px 15px;
+          border: 1px dashed var(--border);
+          border-radius: 12px;
+          text-align: center;
+          color: var(--text-muted);
+          font-size: 12px;
+          line-height: 1.6;
+        }
+
+        .doubt-empty strong {
+          display: block;
+          margin-bottom: 4px;
+          color: var(--text-main);
+          font-size: 13px;
+        }
+
+        /* ======================================================
            PREVIOUS / NEXT
         ====================================================== */
 
@@ -1268,6 +1890,53 @@ export default function StudentNotes() {
           .note-navigation {
             flex-direction: column;
             margin-top: 45px;
+          }
+
+          .faculty-rating-header {
+            flex-direction: column;
+          }
+
+          .faculty-rating-average {
+            align-self: flex-start;
+          }
+
+          .faculty-rating-session {
+            margin-top: 42px;
+            padding: 17px;
+          }
+
+          .doubt-session {
+            margin-top: 42px;
+            padding-top: 25px;
+          }
+
+          .doubt-session-header {
+            flex-direction: column;
+            gap: 9px;
+          }
+
+          .doubt-session-title {
+            font-size: 21px;
+          }
+
+          .doubt-count {
+            align-self: flex-start;
+          }
+
+          .doubt-form {
+            padding: 14px;
+          }
+
+          .doubt-form-footer {
+            align-items: flex-end;
+          }
+
+          .doubt-status {
+            margin-left: 0;
+          }
+
+          .doubt-card-meta {
+            padding-right: 0;
           }
 
           .note-nav-button {
@@ -1721,6 +2390,7 @@ export default function StudentNotes() {
                   </header>
                   {currentNote.uploadedBy && (
                     <div
+                      className="faculty-details-card"
                       style={{
                         display: "flex",
                         alignItems: "center",
@@ -1792,6 +2462,77 @@ export default function StudentNotes() {
                           {currentNote.uploadedBy.email}
                         </span>
                       </div>
+                      <div
+                        className="faculty-average-rating"
+                        style={{
+                          marginLeft: "auto",
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "8px",
+                          paddingLeft: "15px",
+                          borderLeft: "1px solid var(--border)",
+                          flexShrink: 0,
+                        }}
+                      >
+                        <span
+                          style={{
+                            color: "#f5b400",
+                            fontSize: "18px",
+                            lineHeight: 1,
+                          }}
+                        >
+                          ★
+                        </span>
+
+                        <div
+                          style={{
+                            display: "flex",
+                            flexDirection: "column",
+                            gap: "3px",
+                          }}
+                        >
+                          <span
+                            style={{
+                              color: "var(--text-main)",
+                              fontSize: "12px",
+                              fontWeight: "800",
+                            }}
+                          >
+                            {ratingLoading
+                              ? "Loading..."
+                              : facultyRating.count > 0
+                                ? `${facultyRating.average.toFixed(1)} / 5`
+                                : "No ratings yet"}
+                          </span>
+
+                          <span
+                            style={{
+                              color: "var(--text-muted)",
+                              fontSize: "10px",
+                            }}
+                          >
+                            {facultyRating.count > 0
+                              ? `${facultyRating.count} ${
+                                  facultyRating.count === 1
+                                    ? "rating"
+                                    : "ratings"
+                                }`
+                              : "Faculty rating"}
+                          </span>
+
+                          {facultyRating.myRating > 0 && (
+                            <span
+                              style={{
+                                color: "var(--primary-text)",
+                                fontSize: "10px",
+                                fontWeight: "700",
+                              }}
+                            >
+                              Your rating: {facultyRating.myRating}/5
+                            </span>
+                          )}
+                        </div>
+                      </div>
                     </div>
                   )}
                   {/* CONTENT */}
@@ -1810,6 +2551,228 @@ export default function StudentNotes() {
                       <p>This note has no content yet.</p>
                     </div>
                   )}
+
+                  {/* ====================================================
+                      DOUBT SESSION
+                  ==================================================== */}
+
+                  {/* ====================================================
+                      FACULTY RATING
+                  ==================================================== */}
+
+                  <section className="faculty-rating-session">
+                    <div className="faculty-rating-header">
+                      <div>
+                        <p className="faculty-rating-eyebrow">Faculty Review</p>
+
+                        <h2 className="faculty-rating-title">
+                          Rate this faculty
+                        </h2>
+
+                        <p className="faculty-rating-subtitle">
+                          Rate the faculty whose notes you are studying.
+                        </p>
+                      </div>
+
+                      {facultyRating.count > 0 && (
+                        <div className="faculty-rating-average">
+                          <span className="faculty-rating-average-star">★</span>
+
+                          <strong>{facultyRating.average.toFixed(1)}</strong>
+
+                          <span>
+                            / 5 · {facultyRating.count}{" "}
+                            {facultyRating.count === 1 ? "rating" : "ratings"}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="faculty-rating-control">
+                      <PeekRating
+                        key={`${currentNote._id}-${facultyRating.myRating}`}
+                        defaultValue={facultyRating.myRating || 0}
+                        count={5}
+                        shape="star"
+                        labels={["Poor", "Fair", "Good", "Great", "Superb"]}
+                        activeColor="#f5b400"
+                        idleColor="#52525b"
+                        tipColor="#27272a"
+                        tipTextColor="#f5f5f5"
+                        size={40}
+                        lift={8}
+                        magnify={1.15}
+                        riseDuration={320}
+                        popScale={1.3}
+                        showTip
+                        allowClear={false}
+                        onChange={handleFacultyRating}
+                        showLabels
+                        readOnly={ratingSubmitting}
+                      />
+                    </div>
+
+                    <p className="faculty-rating-current">
+                      {facultyRating.myRating
+                        ? `Your rating: ${facultyRating.myRating}/5`
+                        : "You have not rated this faculty yet."}
+                    </p>
+
+                    {ratingSubmitting && (
+                      <p className="faculty-rating-message">
+                        Saving your rating...
+                      </p>
+                    )}
+
+                    {ratingSuccess && (
+                      <p className="faculty-rating-message success">
+                        {ratingSuccess}
+                      </p>
+                    )}
+
+                    {ratingError && (
+                      <p className="faculty-rating-message error">
+                        {ratingError}
+                      </p>
+                    )}
+                  </section>
+
+                  <section className="doubt-session">
+                    <div className="doubt-session-header">
+                      <div>
+                        <p className="doubt-session-eyebrow">Discussion</p>
+                        <h2 className="doubt-session-title">Ask a Doubt</h2>
+                        <p className="doubt-session-subtitle">
+                          Ask a question about this note and the faculty who
+                          uploaded it can answer.
+                        </p>
+                      </div>
+
+                      <span className="doubt-count">
+                        {doubts.length}{" "}
+                        {doubts.length === 1 ? "doubt" : "doubts"}
+                      </span>
+                    </div>
+
+                    <form className="doubt-form" onSubmit={submitDoubt}>
+                      <label
+                        className="doubt-form-label"
+                        htmlFor="student-doubt"
+                      >
+                        Your question
+                      </label>
+
+                      <textarea
+                        id="student-doubt"
+                        className="doubt-textarea"
+                        value={doubtQuestion}
+                        onChange={(e) => {
+                          setDoubtQuestion(e.target.value);
+                          if (doubtError) setDoubtError("");
+                          if (doubtSuccess) setDoubtSuccess("");
+                        }}
+                        placeholder="What would you like to understand about this topic?"
+                        maxLength={2000}
+                        disabled={doubtSubmitting}
+                      />
+
+                      <div className="doubt-form-footer">
+                        <span className="doubt-character-count">
+                          {doubtQuestion.length}/2000
+                        </span>
+
+                        <button
+                          type="submit"
+                          className="doubt-submit-button"
+                          disabled={doubtSubmitting || !doubtQuestion.trim()}
+                        >
+                          {doubtSubmitting ? "Submitting..." : "Ask Doubt"}
+                        </button>
+                      </div>
+
+                      {doubtError && (
+                        <p className="doubt-message error">{doubtError}</p>
+                      )}
+
+                      {doubtSuccess && (
+                        <p className="doubt-message success">{doubtSuccess}</p>
+                      )}
+                    </form>
+
+                    {doubtsLoading ? (
+                      <div className="doubt-loading">Loading doubts...</div>
+                    ) : doubts.length === 0 ? (
+                      <div className="doubt-empty">
+                        <strong>No doubts yet</strong>
+                        Be the first student to ask a question about this note.
+                      </div>
+                    ) : (
+                      <div className="doubts-list">
+                        {doubts.map((doubt) => {
+                          const studentName = doubt.student?.name || "Student";
+
+                          return (
+                            <div className="doubt-card" key={doubt._id}>
+                              <div className="doubt-card-top">
+                                <div className="doubt-avatar">
+                                  {studentName.charAt(0).toUpperCase()}
+                                </div>
+
+                                <div className="doubt-card-content">
+                                  <div className="doubt-card-meta">
+                                    <span className="doubt-author">
+                                      {studentName}
+                                    </span>
+
+                                    <span className="doubt-date">
+                                      {doubt.createdAt
+                                        ? new Date(
+                                            doubt.createdAt,
+                                          ).toLocaleDateString("en-IN", {
+                                            day: "numeric",
+                                            month: "short",
+                                            year: "numeric",
+                                          })
+                                        : ""}
+                                    </span>
+
+                                    <span
+                                      className={`doubt-status ${
+                                        doubt.status === "answered"
+                                          ? "answered"
+                                          : "pending"
+                                      }`}
+                                    >
+                                      {doubt.status === "answered"
+                                        ? "Answered"
+                                        : "Pending"}
+                                    </span>
+                                  </div>
+
+                                  <p className="doubt-question">
+                                    {doubt.question}
+                                  </p>
+
+                                  {doubt.status === "answered" &&
+                                    doubt.answer && (
+                                      <div className="doubt-answer">
+                                        <p className="doubt-answer-label">
+                                          Faculty Answer
+                                        </p>
+
+                                        <p className="doubt-answer-text">
+                                          {doubt.answer}
+                                        </p>
+                                      </div>
+                                    )}
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </section>
 
                   {/* NAVIGATION */}
 

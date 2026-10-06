@@ -27,51 +27,61 @@ import FacultyLogin from "./components/guestlayout/FacultyLogin";
 import FacultyRequests from "./components/adminlayout/FacultyRequests";
 import FacultyRegister from "./components/guestlayout/FacultyRegister";
 import FacultyProfile from "./components/facultylayout/FacultyProfile";
+import FacultyDoubts from "./components/facultylayout/FacultyDoubts";
+import StudentDoubts from "./components/userlayout/StudentDoubts";
+import GDTopics from "./components/facultylayout/GDTopics";
+import Placements from "./components/adminlayout/Placements";
+import StudentPlacements from "./components/userlayout/StudentPlacements";
 function App() {
   return (
+    <Routes>
+      <Route element={<GuestLayout />}>
+        <Route path="/" element={<Home />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/book" element={<BookAnimation />} />
+        <Route path="/services" element={<Services />} />
+        <Route path="/contact" element={<Contact />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/faculty-login" element={<FacultyLogin />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/faculty-register" element={<FacultyRegister />} />
+      </Route>
 
-      <Routes>
+      <Route element={<UserLayout />}>
+        <Route path="/dashboard" element={<UserDashboard />} />
+        <Route path="/feedback" element={<FeedbackForm />} />
+        <Route path="/profile" element={<Profile />} />
+        <Route path="/studentnotes" element={<StudentNotes />} />
+        <Route path="/doubts" element={<StudentDoubts />} />
+        <Route path="/placements" element={<StudentPlacements />} />
+      </Route>
 
-        <Route element={<GuestLayout />}>
-          <Route path="/" element={<Home />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/book" element={<BookAnimation />} />
-          <Route path="/services" element={<Services />} />
-          <Route path="/contact" element={<Contact />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/faculty-login" element={<FacultyLogin />} />
-          <Route path="/forgot-password" element={<ForgotPassword />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/faculty-register" element={<FacultyRegister />} />
-        </Route>
+      <Route path="/faculty" element={<FacultyLayout />}>
+        <Route path="facultynote" element={<FacultyNotes />} />
+        <Route path="feedback" element={<UserFeedbacks />} />
+        <Route path="profile" element={<FacultyProfile />} />
+        <Route path="doubts" element={<FacultyDoubts />} />
+        <Route path="gd-topics" element={<GDTopics />} />
+      </Route>
 
-        <Route element={<UserLayout />}>
-          <Route path="/dashboard" element={<UserDashboard />} />
-          <Route path="/feedback" element={<FeedbackForm />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/studentnotes" element={<StudentNotes />} />
-        </Route>
+      <Route element={<AdminLayout />}>
+        <Route path="/admin" element={<AdminDashboard />} />
+        <Route path="/admin/faculty" element={<FacultyRequests />} />
+        <Route path="/admin/feedbacks" element={<UserFeedbacks />} />
+        <Route path="/admin/users" element={<AdminUsers />} />
+        <Route path="/admin/contacts" element={<AdminContacts />} />
+        <Route path="/admin/placements" element={<Placements />} />
+        <Route
+          path="/admin/academicmanagement"
+          element={<AcademicManagement />}
+        />
+        <Route path="/admin/facultynote" element={<FacultyNotes />} />
+        <Route path="/admin/profile" element={<Profile />} />
+      </Route>
 
-        <Route path="/faculty" element={<FacultyLayout />}>
-          <Route path="facultynote" element={<FacultyNotes />} />
-          <Route path="feedback" element={<UserFeedbacks />} />
-          <Route path="profile" element={<FacultyProfile />} />
-        </Route>
-
-        <Route element={<AdminLayout />}>
-          <Route path="/admin" element={<AdminDashboard />} />
-          <Route path="/admin/faculty" element={<FacultyRequests/>}/>
-          <Route path="/admin/feedbacks" element={<UserFeedbacks />} />
-          <Route path="/admin/users" element={<AdminUsers />} />
-          <Route path="/admin/contacts" element={<AdminContacts />} />
-          <Route path="/admin/academicmanagement" element={<AcademicManagement />} />
-          <Route path="/admin/facultynote" element={<FacultyNotes />} />
-          <Route path="/admin/profile" element={<Profile />} />
-        </Route>
-
-        <Route path="*" element={<NotFound />} />
-
-      </Routes>
+      <Route path="*" element={<NotFound />} />
+    </Routes>
   );
 }
 

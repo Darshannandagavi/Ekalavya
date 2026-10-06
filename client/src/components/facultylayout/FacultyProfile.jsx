@@ -34,7 +34,6 @@ function FacultyProfile() {
       .catch(console.error)
       .finally(() => setLoading(false));
   }, []);
-
   const handleProfileSave = async (e) => {
     e.preventDefault();
     if (!nameForm.name.trim()) { 
@@ -177,134 +176,150 @@ function FacultyProfile() {
 
   return (
     <div style={{ maxWidth: "720px", margin: "0 auto", padding: "40px 24px" }}>
-      <div style={{ 
-        display: "flex", 
-        alignItems: "center", 
-        gap: "20px", 
-        marginBottom: "40px" 
-      }}>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: "20px",
+          marginBottom: "40px",
+        }}
+      >
         <div style={{ position: "relative" }}>
           {user?.profilePic ? (
-            <img 
-              src={user.profilePic} 
-              alt="Profile" 
-              style={{ 
-                width: "72px", 
-                height: "72px", 
-                borderRadius: "18px", 
-                objectFit: "cover", 
-                border: "2px solid var(--border)" 
-              }} 
+            <img
+              src={user.profilePic}
+              alt="Profile"
+              style={{
+                width: "72px",
+                height: "72px",
+                borderRadius: "18px",
+                objectFit: "cover",
+                border: "2px solid var(--border)",
+              }}
             />
           ) : (
-            <div style={{ 
-              width: "72px", 
-              height: "72px", 
-              backgroundColor: "var(--primary)", 
-              borderRadius: "18px", 
-              display: "flex", 
-              alignItems: "center", 
-              justifyContent: "center", 
-              color: "#fff", 
-              fontSize: "22px", 
-              fontWeight: "900" 
-            }}>
+            <div
+              style={{
+                width: "72px",
+                height: "72px",
+                backgroundColor: "var(--primary)",
+                borderRadius: "18px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                color: "#fff",
+                fontSize: "22px",
+                fontWeight: "900",
+              }}
+            >
               {initials}
             </div>
           )}
-          <label 
-            htmlFor="picInput" 
-            style={{ 
-              position: "absolute", 
-              bottom: "-4px", 
-              right: "-4px", 
-              width: "26px", 
-              height: "26px", 
-              backgroundColor: "var(--primary)", 
-              borderRadius: "50%", 
-              display: "flex", 
-              alignItems: "center", 
-              justifyContent: "center", 
-              cursor: "pointer", 
-              transition: "background 0.2s" 
+          <label
+            htmlFor="picInput"
+            style={{
+              position: "absolute",
+              bottom: "-4px",
+              right: "-4px",
+              width: "26px",
+              height: "26px",
+              backgroundColor: "var(--primary)",
+              borderRadius: "50%",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              cursor: "pointer",
+              transition: "background 0.2s",
             }}
-            onMouseEnter={(e) => 
+            onMouseEnter={(e) =>
               (e.currentTarget.style.backgroundColor = "var(--primary-hover)")
             }
-            onMouseLeave={(e) => 
+            onMouseLeave={(e) =>
               (e.currentTarget.style.backgroundColor = "var(--primary)")
             }
           >
-            <svg 
-              style={{ width: "12px", height: "12px", color: "#fff" }} 
-              fill="none" 
-              stroke="currentColor" 
+            <svg
+              style={{ width: "12px", height: "12px", color: "#fff" }}
+              fill="none"
+              stroke="currentColor"
               viewBox="0 0 24 24"
             >
-              <path 
-                strokeLinecap="round" 
-                strokeLinejoin="round" 
-                strokeWidth={2} 
-                d="M15.232 5.232l3.536 3.536M9 13l6.586-6.586a2 2 0 012.828 2.828L11.828 15.828a2 2 0 01-1.414.586H9v-2.414a2 2 0 01.586-1.414z" 
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M15.232 5.232l3.536 3.536M9 13l6.586-6.586a2 2 0 012.828 2.828L11.828 15.828a2 2 0 01-1.414.586H9v-2.414a2 2 0 01.586-1.414z"
               />
             </svg>
           </label>
-          <input 
-            id="picInput" 
-            type="file" 
-            accept="image/jpeg,image/png,image/webp" 
-            onChange={handleProfilePicChange} 
-            style={{ display: "none" }} 
+          <input
+            id="picInput"
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+            onChange={handleProfilePicChange}
+            style={{ display: "none" }}
           />
         </div>
-        
+
         <div>
-          <h1 style={{ 
-            fontSize: "1.6rem", 
-            fontWeight: "900", 
-            color: "var(--text-main)", 
-            marginBottom: "4px" 
-          }}>
+          <h1
+            style={{
+              fontSize: "1.6rem",
+              fontWeight: "900",
+              color: "var(--text-main)",
+              marginBottom: "4px",
+            }}
+          >
             {user?.name}
           </h1>
-          <p style={{ 
-            fontSize: "14px", 
-            color: "var(--text-muted)", 
-            margin: 0 
-          }}>
+          <p
+            style={{
+              fontSize: "14px",
+              color: "var(--text-muted)",
+              margin: 0,
+            }}
+          >
             {user?.email} ·{" "}
-            <span style={{ 
-              color: "var(--primary)", 
-              fontWeight: "600", 
-              textTransform: "capitalize" 
-            }}>
+            <span
+              style={{
+                color: "var(--primary)",
+                fontWeight: "600",
+                textTransform: "capitalize",
+              }}
+            >
               {user?.role || "Faculty"}
             </span>
           </p>
           {user?.designation && (
-            <p style={{ 
-              fontSize: "13px", 
-              color: "var(--text-faint)", 
-              margin: "4px 0 0" 
-            }}>
+            <p
+              style={{
+                fontSize: "13px",
+                color: "var(--text-faint)",
+                margin: "4px 0 0",
+              }}
+            >
               {user.designation}
             </p>
           )}
           {uploadingPic && (
-            <p style={{ 
-              fontSize: "12px", 
-              color: "var(--primary)", 
-              marginTop: "6px" 
-            }}>
+            <p
+              style={{
+                fontSize: "12px",
+                color: "var(--primary)",
+                marginTop: "6px",
+              }}
+            >
               Uploading...
             </p>
           )}
           {picMsg.text && (
-            <p style={{ 
-              fontSize: "12px", 
-              marginTop: "6px", 
-              color: picMsg.type === "success" ? "#10b981" : "#ef4444" 
-            }}>
+            <p
+              style={{
+                fontSize: "12px",
+                marginTop: "6px",
+                color: picMsg.type === "success" ? "#10b981" : "#ef4444",
+              }}
+            >
               {picMsg.text}
             </p>
           )}
@@ -312,19 +327,23 @@ function FacultyProfile() {
       </div>
 
       <div style={cardStyle}>
-        <h2 style={{ 
-          fontSize: "17px", 
-          fontWeight: "800", 
-          color: "var(--text-main)", 
-          marginBottom: "6px" 
-        }}>
+        <h2
+          style={{
+            fontSize: "17px",
+            fontWeight: "800",
+            color: "var(--text-main)",
+            marginBottom: "6px",
+          }}
+        >
           Personal Information
         </h2>
-        <p style={{ 
-          fontSize: "13px", 
-          color: "var(--text-faint)", 
-          marginBottom: "24px" 
-        }}>
+        <p
+          style={{
+            fontSize: "13px",
+            color: "var(--text-faint)",
+            marginBottom: "24px",
+          }}
+        >
           Update your name and designation. Email cannot be changed.
         </p>
         {profileMsg.text && (
@@ -332,98 +351,178 @@ function FacultyProfile() {
             {profileMsg.type === "success" ? "✅" : "⚠️"} {profileMsg.text}
           </div>
         )}
-        <form onSubmit={handleProfileSave} style={{ 
-          display: "flex", 
-          flexDirection: "column", 
-          gap: "20px" 
-        }}>
+        <form
+          onSubmit={handleProfileSave}
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: "20px",
+          }}
+        >
           <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-            <label style={{ 
-              fontSize: "13px", 
-              fontWeight: "600", 
-              color: "var(--text-muted)" 
-            }}>
+            <label
+              style={{
+                fontSize: "13px",
+                fontWeight: "600",
+                color: "var(--text-muted)",
+              }}
+            >
               Full name
             </label>
-            <input 
-              value={nameForm.name} 
-              onChange={(e) => setNameForm({ ...nameForm, name: e.target.value })} 
-              placeholder="John Doe" 
-              required 
+            <input
+              value={nameForm.name}
+              onChange={(e) =>
+                setNameForm({ ...nameForm, name: e.target.value })
+              }
+              placeholder="John Doe"
+              required
               style={inputStyle}
-              onFocus={(e) => (e.target.style.borderColor = "var(--primary)")} 
-              onBlur={(e) => (e.target.style.borderColor = "var(--border)")} 
+              onFocus={(e) => (e.target.style.borderColor = "var(--primary)")}
+              onBlur={(e) => (e.target.style.borderColor = "var(--border)")}
             />
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-            <label style={{ 
-              fontSize: "13px", 
-              fontWeight: "600", 
-              color: "var(--text-muted)" 
-            }}>
+            <label
+              style={{
+                fontSize: "13px",
+                fontWeight: "600",
+                color: "var(--text-muted)",
+              }}
+            >
               Designation
             </label>
-            <input 
-              value={nameForm.designation} 
-              onChange={(e) => setNameForm({ ...nameForm, designation: e.target.value })} 
-              placeholder="Professor, Assistant Professor, etc." 
+            <input
+              value={nameForm.designation}
+              onChange={(e) =>
+                setNameForm({ ...nameForm, designation: e.target.value })
+              }
+              placeholder="Professor, Assistant Professor, etc."
               style={inputStyle}
-              onFocus={(e) => (e.target.style.borderColor = "var(--primary)")} 
-              onBlur={(e) => (e.target.style.borderColor = "var(--border)")} 
+              onFocus={(e) => (e.target.style.borderColor = "var(--primary)")}
+              onBlur={(e) => (e.target.style.borderColor = "var(--border)")}
             />
           </div>
+          {user?.designation && (
+            <p
+              style={{
+                fontSize: "13px",
+                color: "var(--text-faint)",
+                margin: "4px 0 0",
+              }}
+            >
+              {user.designation}
+            </p>
+          )}
+
+          {/* Rating */}
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "14px",
+              marginTop: "12px",
+            }}
+          >
+            {/* Average Rating */}
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "6px",
+              }}
+            >
+              <span
+                style={{
+                  color: "#f59e0b",
+                  fontSize: "18px",
+                }}
+              >
+                ★
+              </span>
+
+              <span
+                style={{
+                  color: "var(--text-main)",
+                  fontSize: "15px",
+                  fontWeight: "800",
+                }}
+              >
+                {Number(user?.avg_rating || 0).toFixed(1)}
+              </span>
+            </div>
+
+            {/* Total Ratings */}
+            <span
+              style={{
+                fontSize: "13px",
+                color: "var(--text-muted)",
+              }}
+            >
+              ({user?.rating_count || 0}{" "}
+              {user?.rating_count === 1 ? "rating" : "ratings"})
+            </span>
+          </div>
           <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-            <label style={{ 
-              fontSize: "13px", 
-              fontWeight: "600", 
-              color: "var(--text-muted)" 
-            }}>
-              Email <span style={{ color: "var(--text-faint)", fontWeight: "400" }}>
+            <label
+              style={{
+                fontSize: "13px",
+                fontWeight: "600",
+                color: "var(--text-muted)",
+              }}
+            >
+              Email{" "}
+              <span style={{ color: "var(--text-faint)", fontWeight: "400" }}>
                 (cannot be changed)
               </span>
             </label>
-            <input 
-              value={user?.email} 
-              disabled 
-              style={{ ...inputStyle, opacity: 0.5, cursor: "not-allowed" }} 
+            <input
+              value={user?.email}
+              disabled
+              style={{ ...inputStyle, opacity: 0.5, cursor: "not-allowed" }}
             />
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-            <label style={{ 
-              fontSize: "13px", 
-              fontWeight: "600", 
-              color: "var(--text-muted)" 
-            }}>
+            <label
+              style={{
+                fontSize: "13px",
+                fontWeight: "600",
+                color: "var(--text-muted)",
+              }}
+            >
               Status
             </label>
-            <span style={{ 
-              display: "inline-block", 
-              padding: "4px 14px", 
-              backgroundColor: user?.isApproved ? "rgba(16,185,129,0.1)" : "rgba(239,68,68,0.1)",
-              color: user?.isApproved ? "#10b981" : "#ef4444",
-              fontSize: "12px", 
-              fontWeight: "700", 
-              borderRadius: "999px", 
-              alignSelf: "flex-start" 
-            }}>
+            <span
+              style={{
+                display: "inline-block",
+                padding: "4px 14px",
+                backgroundColor: user?.isApproved
+                  ? "rgba(16,185,129,0.1)"
+                  : "rgba(239,68,68,0.1)",
+                color: user?.isApproved ? "#10b981" : "#ef4444",
+                fontSize: "12px",
+                fontWeight: "700",
+                borderRadius: "999px",
+                alignSelf: "flex-start",
+              }}
+            >
               {user?.isApproved ? "✅ Approved" : "⏳ Pending Approval"}
             </span>
           </div>
-          <button 
-            type="submit" 
+          <button
+            type="submit"
             disabled={saving}
-            style={{ 
-              alignSelf: "flex-start", 
-              padding: "11px 28px", 
-              borderRadius: "10px", 
-              border: "none", 
-              cursor: "pointer", 
-              backgroundColor: "var(--primary)", 
-              color: "#fff", 
-              fontWeight: "700", 
-              fontSize: "14px", 
+            style={{
+              alignSelf: "flex-start",
+              padding: "11px 28px",
+              borderRadius: "10px",
+              border: "none",
+              cursor: "pointer",
+              backgroundColor: "var(--primary)",
+              color: "#fff",
+              fontWeight: "700",
+              fontSize: "14px",
               opacity: saving ? 0.6 : 1,
-              transition: "opacity 0.2s"
+              transition: "opacity 0.2s",
             }}
           >
             {saving ? "Saving..." : "Save Changes"}
@@ -432,19 +531,23 @@ function FacultyProfile() {
       </div>
 
       <div style={cardStyle}>
-        <h2 style={{ 
-          fontSize: "17px", 
-          fontWeight: "800", 
-          color: "var(--text-main)", 
-          marginBottom: "6px" 
-        }}>
+        <h2
+          style={{
+            fontSize: "17px",
+            fontWeight: "800",
+            color: "var(--text-main)",
+            marginBottom: "6px",
+          }}
+        >
           Change Password
         </h2>
-        <p style={{ 
-          fontSize: "13px", 
-          color: "var(--text-faint)", 
-          marginBottom: "24px" 
-        }}>
+        <p
+          style={{
+            fontSize: "13px",
+            color: "var(--text-faint)",
+            marginBottom: "24px",
+          }}
+        >
           Must be at least 8 characters.
         </p>
         {passwordMsg.text && (
@@ -452,75 +555,102 @@ function FacultyProfile() {
             {passwordMsg.type === "success" ? "✅" : "⚠️"} {passwordMsg.text}
           </div>
         )}
-        <form onSubmit={handlePasswordChange} style={{ 
-          display: "flex", 
-          flexDirection: "column", 
-          gap: "20px" 
-        }}>
+        <form
+          onSubmit={handlePasswordChange}
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: "20px",
+          }}
+        >
           {[
-            { field: "current", label: "Current password", key: "currentPassword" },
+            {
+              field: "current",
+              label: "Current password",
+              key: "currentPassword",
+            },
             { field: "new", label: "New password", key: "newPassword" },
-            { field: "confirm", label: "Confirm new password", key: "confirmPassword" },
+            {
+              field: "confirm",
+              label: "Confirm new password",
+              key: "confirmPassword",
+            },
           ].map(({ field, label, key }) => (
-            <div key={key} style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-              <label style={{ 
-                fontSize: "13px", 
-                fontWeight: "600", 
-                color: "var(--text-muted)" 
-              }}>
+            <div
+              key={key}
+              style={{ display: "flex", flexDirection: "column", gap: "6px" }}
+            >
+              <label
+                style={{
+                  fontSize: "13px",
+                  fontWeight: "600",
+                  color: "var(--text-muted)",
+                }}
+              >
                 {label}
               </label>
               <div style={{ position: "relative" }}>
-                <input 
-                  type={showPasswords[field] ? "text" : "password"} 
+                <input
+                  type={showPasswords[field] ? "text" : "password"}
                   value={passwordForm[key]}
-                  onChange={(e) => setPasswordForm({ ...passwordForm, [key]: e.target.value })} 
+                  onChange={(e) =>
+                    setPasswordForm({ ...passwordForm, [key]: e.target.value })
+                  }
                   placeholder="••••••••"
                   style={{ ...inputStyle, paddingRight: "60px" }}
-                  onFocus={(e) => (e.target.style.borderColor = "var(--primary)")} 
-                  onBlur={(e) => (e.target.style.borderColor = "var(--border)")} 
+                  onFocus={(e) =>
+                    (e.target.style.borderColor = "var(--primary)")
+                  }
+                  onBlur={(e) => (e.target.style.borderColor = "var(--border)")}
                 />
-                <button 
-                  type="button" 
-                  onClick={() => setShowPasswords((p) => ({ ...p, [field]: !p[field] }))}
-                  style={{ 
-                    position: "absolute", 
-                    right: "12px", 
-                    top: "50%", 
-                    transform: "translateY(-50%)", 
-                    background: "none", 
-                    border: "none", 
-                    cursor: "pointer", 
-                    fontSize: "12px", 
-                    fontWeight: "600", 
+                <button
+                  type="button"
+                  onClick={() =>
+                    setShowPasswords((p) => ({ ...p, [field]: !p[field] }))
+                  }
+                  style={{
+                    position: "absolute",
+                    right: "12px",
+                    top: "50%",
+                    transform: "translateY(-50%)",
+                    background: "none",
+                    border: "none",
+                    cursor: "pointer",
+                    fontSize: "12px",
+                    fontWeight: "600",
                     color: "var(--text-faint)",
                     padding: "4px 8px",
                     borderRadius: "4px",
-                    transition: "background 0.2s"
+                    transition: "background 0.2s",
                   }}
-                  onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "var(--bg-secondary)")}
-                  onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "transparent")}
+                  onMouseEnter={(e) =>
+                    (e.currentTarget.style.backgroundColor =
+                      "var(--bg-secondary)")
+                  }
+                  onMouseLeave={(e) =>
+                    (e.currentTarget.style.backgroundColor = "transparent")
+                  }
                 >
                   {showPasswords[field] ? "Hide" : "Show"}
                 </button>
               </div>
             </div>
           ))}
-          <button 
-            type="submit" 
+          <button
+            type="submit"
             disabled={changingPassword}
-            style={{ 
-              alignSelf: "flex-start", 
-              padding: "11px 28px", 
-              borderRadius: "10px", 
-              cursor: "pointer", 
-              backgroundColor: "var(--bg-secondary)", 
-              color: "var(--text-main)", 
-              border: "1px solid var(--border)", 
-              fontWeight: "700", 
-              fontSize: "14px", 
+            style={{
+              alignSelf: "flex-start",
+              padding: "11px 28px",
+              borderRadius: "10px",
+              cursor: "pointer",
+              backgroundColor: "var(--bg-secondary)",
+              color: "var(--text-main)",
+              border: "1px solid var(--border)",
+              fontWeight: "700",
+              fontSize: "14px",
               opacity: changingPassword ? 0.6 : 1,
-              transition: "opacity 0.2s"
+              transition: "opacity 0.2s",
             }}
           >
             {changingPassword ? "Changing..." : "Change Password"}
@@ -531,7 +661,9 @@ function FacultyProfile() {
       {/* Add CSS animation for spinner */}
       <style jsx>{`
         @keyframes spin {
-          to { transform: rotate(360deg); }
+          to {
+            transform: rotate(360deg);
+          }
         }
       `}</style>
     </div>

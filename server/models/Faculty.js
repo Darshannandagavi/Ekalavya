@@ -11,7 +11,7 @@ const facultySchema = new mongoose.Schema(
 
     email: {
       type: String,
-      required: [true, "Email is required"],
+      required: true,
       unique: true,
       lowercase: true,
       trim: true,
@@ -19,7 +19,7 @@ const facultySchema = new mongoose.Schema(
 
     password: {
       type: String,
-      required: [true, "Password is required"],
+      required: true,
       minlength: [8, "Password must be at least 8 characters"],
     },
 
@@ -35,7 +35,6 @@ const facultySchema = new mongoose.Schema(
       default: "",
     },
 
-    // Academic affiliation
     university: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "University",
@@ -48,7 +47,23 @@ const facultySchema = new mongoose.Schema(
       required: [true, "Course is required"],
     },
 
-    // Admin must approve before faculty can log in
+    // ============================================
+    // FACULTY RATING
+    // ============================================
+
+    avg_rating: {
+      type: Number,
+      default: 0,
+      min: 0,
+      max: 5,
+    },
+
+    rating_count: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
+
     isApproved: {
       type: Boolean,
       default: false,
@@ -69,7 +84,7 @@ const facultySchema = new mongoose.Schema(
       default: "",
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 facultySchema.pre("save", async function () {

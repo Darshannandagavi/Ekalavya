@@ -59,6 +59,8 @@ function FacultyNavbar() {
 
   const links = [
     { to: "/faculty/facultynote", label: "Notes" },
+    { to: "/faculty/doubts", label: "Doubts" },
+    { to: "/faculty/gd-topics", label: "GD-Topics" },
     { to: "/faculty/feedback", label: "Feedback" },
   ];
 

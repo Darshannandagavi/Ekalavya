@@ -22,34 +22,8 @@ function GuestFooter() {
         overflow: "hidden",
       }}
     >
-      <div>{/* <FiberBurst/> */}</div>
 
-      {/* Jelly animated footer text */}
-      <div
-        style={{
-          width: "100%",
-          height: "clamp(110px, 18vw, 230px)",
-          position: "relative",
-          zIndex: 1,
-        }}
-      >
-        <MeshText
-          text="EKALAVYA"
-          color="rgb(48, 48, 48)"
-          font={{
-            fontFamily: "Inter",
-            variant: "Bold",
-            fontSize: 160,
-            fontWeight: 700,
-            fontStyle: "normal",
-            lineHeight: "1em",
-            letterSpacing: "0em",
-          }}
-          colorSplit={true}
-          customColors={["#c9c5c7", "#cacaca"]}
-          force={18}
-        />
-      </div>
+     
 
       <div
         style={{
