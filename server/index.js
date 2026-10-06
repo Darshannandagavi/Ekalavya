@@ -290,7 +290,7 @@ import adminAcademicRoutes from "./routes/adminAcademicRoutes.js";
 import noteRoutes from "./routes/noteRoutes.js";
 import adminFacultyRoutes from "./routes/adminFacultyRoutes.js";
 import facultyRoutes from "./routes/facultyRoutes.js";
-import doubtRoutes from "./routes/doubtRoutes.js";
+// import doubtRoutes from "./routes/doubtRoutes.js";
 import facultyReviewRoutes from "./routes/facultyReviewRoutes.js";
 import gdRoutes from "./routes/gdRoutes.js";
 import placementRoutes from "./routes/placementRoutes.js";
@@ -304,7 +304,12 @@ const app = express();
 // CORS
 // ─────────────────────────────────────────────────────────
 
-const allowedOrigins = ["https://www.eklavyas.com", "https://eklavyas.com"];
+const allowedOrigins = [
+  "https://www.eklavyas.com",
+  "https://eklavyas.com",
+  "eklavyas.com",
+  ""
+];
 
 const corsOptions = {
   origin: (origin, callback) => {
@@ -485,7 +490,7 @@ app.use("/api/faculty", generalLimiter, facultyRoutes);
 
 app.use("/api/notes", generalLimiter, noteRoutes);
 
-app.use("/api/doubts", generalLimiter, doubtRoutes);
+// app.use("/api/doubts", generalLimiter, doubtRoutes);
 
 app.use("/api/faculty-reviews", generalLimiter, facultyReviewRoutes);
 
