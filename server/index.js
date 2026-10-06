@@ -13,7 +13,11 @@ import adminAcademicRoutes from "./routes/adminAcademicRoutes.js";
 import noteRoutes from "./routes/noteRoutes.js";
 import adminFacultyRoutes from "./routes/adminFacultyRoutes.js";
 import facultyRoutes from "./routes/facultyRoutes.js";
-
+import doubtRoutes from "./routes/doubtRoutes.js";
+import facultyReviewRoutes from "./routes/facultyReviewRoutes.js";
+import gdRoutes from "./routes/gdRoutes.js";
+import placementRoutes from "./routes/placementRoutes.js";
+// import r2Routes from "./routes/r2Routes.js";
 dotenv.config();
 
 const app = express();
@@ -65,9 +69,12 @@ const mongoSanitize = (req, res, next) => {
 // ─── MIDDLEWARE ──────────────────────────────────────────
 app.use(express.json());
 app.use(cookieParser());
-const allowedOrigins = ["http://localhost:5173", process.env.CLIENT_URL].filter(
-  Boolean,
-);
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://eklavyas.com",
+  "https://www.eklavyas.com",
+  process.env.CLIENT_URL,
+].filter(Boolean);
 
 app.use(
   cors({
@@ -95,7 +102,11 @@ app.use("/api/academic", generalLimiter, adminAcademicRoutes);
 app.use("/api/facultyadmin", generalLimiter, adminFacultyRoutes);
 app.use("/api/faculty", generalLimiter, facultyRoutes);
 app.use("/api/notes", generalLimiter, noteRoutes);
-
+app.use("/api/doubts", generalLimiter, doubtRoutes);
+app.use("/api/faculty-reviews", generalLimiter, facultyReviewRoutes);
+app.use("/api/gd", gdRoutes);
+app.use("/api/placements", placementRoutes);
+// app.use("/api/storage", generalLimiter, r2Routes);
 // ─── HEALTH CHECK ────────────────────────────────────────
 app.get("/api/health", (req, res) => {
   res.json({ status: "ok", message: "Server is running" });
