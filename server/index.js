@@ -133,6 +133,7 @@
 
 
 
+
 import express from "express";
 import mongoose from "mongoose";
 import cookieParser from "cookie-parser";
@@ -173,26 +174,31 @@ app.use(
 );
 
 // ─────────────────────────────────────────────────────────
-// CORS
-// TEMPORARY: ALLOW ALL ORIGINS FOR TESTING
-// ─────────────────────────────────────────────────────────
-
-app.use(
-  cors({
-    origin: true,
-    credentials: true,
-    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-  }),
-);
-
-// ─────────────────────────────────────────────────────────
 // BODY PARSERS
 // ─────────────────────────────────────────────────────────
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+
+// ─────────────────────────────────────────────────────────
+// CORS
+// TEMPORARILY ALLOW ALL ORIGINS FOR TESTING
+// ─────────────────────────────────────────────────────────
+
+const corsOptions = {
+  origin: true,
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  optionsSuccessStatus: 204,
+};
+
+app.use(cors(corsOptions));
+
+// Explicitly handle ALL preflight requests.
+// This must be BEFORE rate limiters and routes.
+app.options(/.*/, cors(corsOptions));
 
 // ─────────────────────────────────────────────────────────
 // RATE LIMITERS
@@ -206,6 +212,9 @@ const authLimiter = rateLimit({
   },
   standardHeaders: true,
   legacyHeaders: false,
+
+  // Do not rate-limit OPTIONS/preflight requests.
+  skip: (req) => req.method === "OPTIONS",
 });
 
 const generalLimiter = rateLimit({
@@ -216,6 +225,9 @@ const generalLimiter = rateLimit({
   },
   standardHeaders: true,
   legacyHeaders: false,
+
+  // Do not rate-limit OPTIONS/preflight requests.
+  skip: (req) => req.method === "OPTIONS",
 });
 
 // ─────────────────────────────────────────────────────────
@@ -251,12 +263,13 @@ const mongoSanitize = (req, res, next) => {
 app.use(mongoSanitize);
 
 // ─────────────────────────────────────────────────────────
-// REQUEST LOGGING — TEMPORARY DEBUGGING
+// TEMPORARY REQUEST LOGGING
+// Useful for debugging Render/CORS.
 // ─────────────────────────────────────────────────────────
 
 app.use((req, res, next) => {
   console.log(
-    `${new Date().toISOString()} ${req.method} ${req.originalUrl} | Origin: ${
+    `[REQUEST] ${req.method} ${req.originalUrl} | Origin: ${
       req.headers.origin || "none"
     }`,
   );
@@ -276,41 +289,50 @@ app.get("/api/health", (req, res) => {
 });
 
 // ─────────────────────────────────────────────────────────
-// AUTH ROUTES
+// ROUTES
 // ─────────────────────────────────────────────────────────
 
+// Authentication
 app.use("/api/auth/login", authLimiter);
 app.use("/api/auth/register", authLimiter);
 app.use("/api/auth/forgot-password", authLimiter);
 
 app.use("/api/auth", generalLimiter, userRoutes);
 
-// ─────────────────────────────────────────────────────────
-// OTHER ROUTES
-// ─────────────────────────────────────────────────────────
-
+// Admin
 app.use("/api/admin", generalLimiter, adminRoutes);
 
+// Feedback
 app.use("/api/feedback", generalLimiter, feedbackRoutes);
 
+// Contact
 app.use("/api/contact", generalLimiter, contactRoutes);
 
+// Academic
 app.use("/api/academic", generalLimiter, adminAcademicRoutes);
 
+// Faculty Admin
 app.use("/api/facultyadmin", generalLimiter, adminFacultyRoutes);
 
+// Faculty
 app.use("/api/faculty", generalLimiter, facultyRoutes);
 
+// Notes
 app.use("/api/notes", generalLimiter, noteRoutes);
 
+// Doubts
 app.use("/api/doubts", generalLimiter, doubtRoutes);
 
+// Faculty Reviews
 app.use("/api/faculty-reviews", generalLimiter, facultyReviewRoutes);
 
+// Group Discussion
 app.use("/api/gd", gdRoutes);
 
+// Placements
 app.use("/api/placements", placementRoutes);
 
+// Storage
 // app.use("/api/storage", generalLimiter, r2Routes);
 
 // ─────────────────────────────────────────────────────────
@@ -329,7 +351,21 @@ app.use((req, res) => {
 // ─────────────────────────────────────────────────────────
 
 app.use((err, req, res, next) => {
-  console.error("SERVER ERROR:", err);
+  console.error("SERVER ERROR:");
+  console.error(err);
+
+  // Make sure CORS headers are present even when an error occurs.
+  const origin = req.headers.origin;
+
+  if (origin) {
+    res.header("Access-Control-Allow-Origin", origin);
+    res.header("Access-Control-Allow-Credentials", "true");
+    res.header(
+      "Access-Control-Allow-Methods",
+      "GET,POST,PUT,PATCH,DELETE,OPTIONS",
+    );
+    res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  }
 
   res.status(err.status || 500).json({
     message: err.message || "Something went wrong.",
