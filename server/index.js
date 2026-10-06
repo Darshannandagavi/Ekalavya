@@ -69,9 +69,12 @@ const mongoSanitize = (req, res, next) => {
 // ─── MIDDLEWARE ──────────────────────────────────────────
 app.use(express.json());
 app.use(cookieParser());
-const allowedOrigins = ["http://localhost:5173", process.env.CLIENT_URL].filter(
-  Boolean,
-);
+const allowedOrigins = [
+  "https://www.eklavyas.com",
+  "https://eklavyas.com",
+  "http://localhost:5173",
+  process.env.CLIENT_URL,
+].filter(Boolean);
 
 app.use(
   cors({
